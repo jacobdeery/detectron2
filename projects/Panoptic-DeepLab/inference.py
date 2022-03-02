@@ -9,15 +9,16 @@ This script is a simplified version of the training script in detectron2/tools.
 import os
 import torch
 
+import numpy as np
+
 import detectron2.data.transforms as T
 import detectron2.utils.comm as comm
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
 from detectron2.data import MetadataCatalog, build_detection_train_loader
-from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, launch
+from detectron2.engine import DefaultTrainer, DefaultPredictor, default_argument_parser, default_setup, launch
 from detectron2.evaluation import (
     CityscapesInstanceEvaluator,
-    CityscapesPixelwiseInstanceEvaluator,
     CityscapesSemSegEvaluator,
     COCOEvaluator,
     COCOPanopticEvaluator,
@@ -30,6 +31,7 @@ from detectron2.projects.panoptic_deeplab import (
 )
 from detectron2.solver import get_default_optimizer_params
 from detectron2.solver.build import maybe_add_gradient_clipping
+from detectron2.data.detection_utils import read_image
 
 
 def build_sem_seg_train_aug(cfg):
@@ -62,9 +64,35 @@ class Trainer(DefaultTrainer):
         """
         if cfg.MODEL.PANOPTIC_DEEPLAB.BENCHMARK_NETWORK_SPEED:
             return None
-
-        evaluator_list = [CityscapesPixelwiseInstanceEvaluator(dataset_name)]
-
+        if output_folder is None:
+            output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
+        evaluator_list = []
+        evaluator_type = MetadataCatalog.get(dataset_name).evaluator_type
+        if evaluator_type in ["cityscapes_panoptic_seg", "coco_panoptic_seg"]:
+            evaluator_list.append(COCOPanopticEvaluator(dataset_name, output_folder))
+        if evaluator_type == "cityscapes_panoptic_seg":
+            evaluator_list.append(CityscapesSemSegEvaluator(dataset_name))
+            evaluator_list.append(CityscapesInstanceEvaluator(dataset_name))
+        if evaluator_type == "coco_panoptic_seg":
+            # `thing_classes` in COCO panoptic metadata includes both thing and
+            # stuff classes for visualization. COCOEvaluator requires metadata
+            # which only contains thing classes, thus we map the name of
+            # panoptic datasets to their corresponding instance datasets.
+            dataset_name_mapper = {
+                "coco_2017_val_panoptic": "coco_2017_val",
+                "coco_2017_val_100_panoptic": "coco_2017_val_100",
+            }
+            evaluator_list.append(
+                COCOEvaluator(dataset_name_mapper[dataset_name], output_dir=output_folder)
+            )
+        if len(evaluator_list) == 0:
+            raise NotImplementedError(
+                "no Evaluator for the dataset {} with the type {}".format(
+                    dataset_name, evaluator_type
+                )
+            )
+        elif len(evaluator_list) == 1:
+            return evaluator_list[0]
         return DatasetEvaluators(evaluator_list)
 
     @classmethod
@@ -121,17 +149,12 @@ def setup(args):
 def main(args):
     cfg = setup(args)
 
-    if args.eval_only:
-        model = Trainer.build_model(cfg)
-        DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
-            cfg.MODEL.WEIGHTS, resume=args.resume
-        )
-        res = Trainer.test(cfg, model)
-        return res
+    pred = DefaultPredictor(cfg)
+    image = read_image('/home/jacob/cityscapes1.png', format='BGR')
+    outputs = pred(image)
+    inst_img = make_instance_image(outputs)
 
-    trainer = Trainer(cfg)
-    trainer.resume_or_load(resume=args.resume)
-    return trainer.train()
+    import pdb; pdb.set_trace()
 
 
 if __name__ == "__main__":

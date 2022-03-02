@@ -1,0 +1,4 @@
+from detectron2.evaluation.cityscapes_evaluation import CityscapesPixelwiseInstanceEvaluator
+import detectron2.evaluation.pixelwise_instance_evaluation as eval
+
+eval.evaluateImgLists()
