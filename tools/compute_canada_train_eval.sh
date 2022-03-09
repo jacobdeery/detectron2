@@ -18,8 +18,9 @@ DATA_DIR=/home/$USER/projects/rrg-swasland/Datasets/cityscapes
 
 BASE_CMD="SINGULARITYENV_CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES
 singularity exec
+--env-file envfile
 --bind $PROJ_DIR:/Pan-DL/code
---bind $DATA_DIR:/Pan-DL/data/cityscapes
+--bind $DATA_DIR:/Pan-DL/datasets/cityscapes
 $SING_IMG
 "
 
