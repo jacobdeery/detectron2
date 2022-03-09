@@ -1,0 +1,33 @@
+#!/bin/bash
+#SBATCH --time=24:00:00
+#SBATCH --job-name=Panoptic-DeepLab-train
+#SBATCH --account=rrg-swasland
+#SBATCH --cpus-per-task=8             # CPU cores/threads
+#SBATCH --gres=gpu:t4:2                # Number of GPUs (per node)
+#SBATCH --mem=64000M                   # memory per node
+#SBATCH --output=./output/log/%x-%j.out   # STDOUT
+#SBATCH --mail-type=ALL
+#SBATCH --array=1-2%1   # 4 is the number of jobs in the chain
+
+module load singularity/3.6
+
+SING_IMG=detectron2.sif
+
+PROJ_DIR=$PWD
+DATA_DIR=/home/$USER/projects/rrg-swasland/Datasets/cityscapes
+
+BASE_CMD="SINGULARITYENV_CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES
+singularity exec
+--bind $PROJ_DIR:/Pan-DL/code
+--bind $DATA_DIR:/Pan-DL/data/cityscapes
+$SING_IMG
+"
+
+PAN_DL_DIR=/Pan-DL/code/projects/Panoptic-DeepLab
+
+TRAIN_CMD="$BASE_CMD
+python $PAN_DL_DIR/train_net.py
+--config-file $PAN_DL_DIR/configs/Cityscapes-PanopticSegmentation/panoptic_uncertainty.yaml
+"
+
+eval $TRAIN_CMD
