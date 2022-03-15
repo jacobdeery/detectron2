@@ -171,7 +171,7 @@ class PanopticDeepLab(nn.Module):
                 top_k=self.top_k,
             )
             # For semantic segmentation evaluation.
-            processed_results.append({"sem_seg": r})
+            processed_results.append({"sem_seg": r, "offsets": o})
             panoptic_image = panoptic_image.squeeze(0)
             semantic_prob = F.softmax(r, dim=0)
             # For panoptic segmentation evaluation.
