@@ -5,11 +5,10 @@
 #SBATCH --cpus-per-task=8             # CPU cores/threads
 #SBATCH --gres=gpu:t4:2                # Number of GPUs (per node)
 #SBATCH --mem=64000M                   # memory per node
-#SBATCH --output=./output/log/%x-%j.out   # STDOUT
 #SBATCH --mail-type=ALL
 #SBATCH --array=1-2%1   # 4 is the number of jobs in the chain
 
-module load singularity/3.6
+module load singularity/3.8
 
 SING_IMG=detectron2.sif
 
@@ -18,7 +17,7 @@ DATA_DIR=/home/$USER/projects/rrg-swasland/Datasets/cityscapes
 
 BASE_CMD="SINGULARITYENV_CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES
 singularity exec
---env-file envfile
+--env-file $PROJ_DIR/tools/envfile
 --bind $PROJ_DIR:/Pan-DL/code
 --bind $DATA_DIR:/Pan-DL/datasets/cityscapes
 $SING_IMG
@@ -31,4 +30,9 @@ python $PAN_DL_DIR/train_net.py
 --config-file $PAN_DL_DIR/configs/Cityscapes-PanopticSegmentation/panoptic_uncertainty.yaml
 "
 
-eval $TRAIN_CMD
+TEST_CMD="$BASE_CMD
+bash
+"
+eval $TEST_CMD
+
+#eval $TRAIN_CMD
