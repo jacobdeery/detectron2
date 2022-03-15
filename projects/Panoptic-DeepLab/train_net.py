@@ -17,7 +17,7 @@ from detectron2.data import MetadataCatalog, build_detection_train_loader
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, launch
 from detectron2.evaluation import (
     CityscapesInstanceEvaluator,
-    CityscapesPixelwiseInstanceEvaluator,
+    # CityscapesPixelwiseInstanceEvaluator,
     CityscapesSemSegEvaluator,
     COCOEvaluator,
     COCOPanopticEvaluator,
@@ -63,7 +63,7 @@ class Trainer(DefaultTrainer):
         if cfg.MODEL.PANOPTIC_DEEPLAB.BENCHMARK_NETWORK_SPEED:
             return None
 
-        evaluator_list = [CityscapesPixelwiseInstanceEvaluator(dataset_name)]
+        evaluator_list = [CityscapesInstanceEvaluator(dataset_name)]
 
         return DatasetEvaluators(evaluator_list)
 
