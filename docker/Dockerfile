@@ -22,16 +22,6 @@ RUN apt-get install -y --no-install-recommends \
 RUN ln -sv /usr/bin/python3.8 /usr/bin/python
 RUN python -m pip install --upgrade pip
 
-#RUN useradd -m --no-log-init --system  --uid ${USER_ID} deeryjac -g sudo
-#RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-#USER deeryjac
-#WORKDIR /home/deeryjac
-
-#ENV PATH="/home/appuser/.local/bin:${PATH}"
-#RUN wget https://bootstrap.pypa.io/get-pip.py && \
-#	python3 get-pip.py && \
-#	rm get-pip.py
-
 # install dependencies
 # See https://pytorch.org/ for other options if you use a different version of CUDA
 RUN python -m pip install tensorboard cmake   # cmake from apt-get is too old
@@ -39,6 +29,8 @@ RUN python -m pip install torch==1.10 torchvision==0.11.1 -f https://download.py
 RUN python -m pip install cityscapesscripts
 
 RUN python -m pip install 'git+https://github.com/facebookresearch/fvcore'
+RUN python -m pip install 'git+https://github.com/cocodataset/panopticapi.git'
+
 # install detectron2
 RUN git clone https://github.com/facebookresearch/detectron2 detectron2_repo
 # set FORCE_CUDA because during `docker build` cuda is not accessible
@@ -62,10 +54,3 @@ WORKDIR /home/appuser
 # Set a fixed model cache directory.
 ENV FVCORE_CACHE="/tmp"
 WORKDIR /home/appuser/detectron2_repo
-
-# run detectron2 under user "deeryjac":
-# wget http://images.cocodataset.org/val2017/000000439715.jpg -O input.jpg
-# python3 demo/demo.py  \
-	#--config-file configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml \
-	#--input input.jpg --output outputs/ \
-	#--opts MODEL.WEIGHTS detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl
