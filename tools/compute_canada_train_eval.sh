@@ -15,11 +15,15 @@ SING_IMG=detectron2.sif
 PROJ_DIR=$PWD
 DATA_DIR=/home/$USER/projects/rrg-swasland/Datasets/cityscapes
 
+TMP_DATA_DIR=$SLURM_TMPDIR/data/cityscapes
+
+tar -zxf DATA_DIR/cityscapes.tar.gz -C TMP_DATA_DIR
+
 BASE_CMD="SINGULARITYENV_CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES
 singularity exec
 --env-file $PROJ_DIR/tools/envfile
 --bind $PROJ_DIR:/Pan-DL/code
---bind $DATA_DIR:/Pan-DL/datasets/cityscapes
+--bind $TMP_DATA_DIR:/Pan-DL/datasets/cityscapes
 $SING_IMG
 "
 
