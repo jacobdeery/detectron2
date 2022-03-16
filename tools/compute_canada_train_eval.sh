@@ -6,6 +6,7 @@
 #SBATCH --gres=gpu:t4:2                # Number of GPUs (per node)
 #SBATCH --mem=64000M                   # memory per node
 #SBATCH --mail-type=ALL
+#SBATCH --array=1   # 4 is the number of jobs in the chain
 
 module load singularity/3.8
 
