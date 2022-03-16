@@ -34,7 +34,7 @@ PAN_DL_DIR=/Pan-DL/code/projects/Panoptic-DeepLab
 TRAIN_CMD="$BASE_CMD
 python $PAN_DL_DIR/train_net.py
 --config-file $PAN_DL_DIR/configs/Cityscapes-PanopticSegmentation/panoptic_uncertainty.yaml
---num_gpus 2
+--num-gpus 2
 "
 
 # TEST_CMD="$BASE_CMD bash"
