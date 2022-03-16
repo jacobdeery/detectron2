@@ -36,7 +36,7 @@ python $PAN_DL_DIR/train_net.py
 --config-file $PAN_DL_DIR/configs/Cityscapes-PanopticSegmentation/panoptic_uncertainty.yaml
 "
 
-TEST_CMD="$BASE_CMD bash"
-eval $TEST_CMD
+# TEST_CMD="$BASE_CMD bash"
+# eval $TEST_CMD
 
-#eval $TRAIN_CMD
+eval $TRAIN_CMD
