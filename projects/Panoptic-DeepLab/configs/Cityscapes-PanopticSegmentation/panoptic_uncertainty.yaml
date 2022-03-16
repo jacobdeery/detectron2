@@ -20,9 +20,14 @@ SOLVER:
   MAX_ITER: 90000
   IMS_PER_BATCH: 12
 INPUT:
+  MIN_SIZE_TRAIN: (1024, )
+  MAX_SIZE_TRAIN: 2048
   FORMAT: "RGB"
   CROP:
-    SIZE: (512, 1024)
+    ENABLED: False
+    # SIZE: (512, 1024)
+DATALOADER:
+  NUM_WORKERS: 8
 DATASETS:
   TEST:
   - cityscapes_fine_panoptic_val_subset
