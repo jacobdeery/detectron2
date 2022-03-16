@@ -17,7 +17,7 @@ DATA_DIR=/home/$USER/projects/rrg-swasland/Datasets/cityscapes
 
 TMP_DATA_DIR=$SLURM_TMPDIR/data/cityscapes
 
-tar -zxf DATA_DIR/cityscapes.tar.gz -C TMP_DATA_DIR
+tar -zxf $DATA_DIR/cityscapes.tar.gz -C TMP_DATA_DIR
 
 BASE_CMD="SINGULARITYENV_CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES
 singularity exec
