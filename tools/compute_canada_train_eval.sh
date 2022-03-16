@@ -16,8 +16,7 @@ PROJ_DIR=$PWD
 DATA_DIR=/home/$USER/projects/rrg-swasland/Datasets/cityscapes
 
 mkdir $SLURM_TMPDIR/data
-mkdir $SLURM_TMPDIR/data/cityscapes
-TMP_DATA_DIR=$SLURM_TMPDIR/data/cityscapes
+TMP_DATA_DIR=$SLURM_TMPDIR/data
 
 tar -zxf $DATA_DIR/cityscapes.tar.gz -C $TMP_DATA_DIR
 
