@@ -1,4 +1,5 @@
 FROM nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
+# use an older system (18.04) to avoid opencv incompatibility (issue#3524)
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,7 +18,8 @@ RUN apt-get install -y --no-install-recommends \
 	python3-pip \
 	python3-setuptools \
 	python3-distutils \
-	python3-apt
+	python3-apt \
+	python3-opencv
 RUN ln -sv /usr/bin/python3.8 /usr/bin/python
 RUN python -m pip install --upgrade pip
 
